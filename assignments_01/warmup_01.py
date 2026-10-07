@@ -1,6 +1,13 @@
+from dataclasses import dataclass, FrozenInstanceError, field
+from pydantic import BaseModel, Field, ValidationError, model_validator
+import pytest
+
+
 # ------------------------------------------------------------------------------------
 # --- Classes --- 
 print("\n ---  Classes ---\n")
+# ------------------------------------------------------------------------------------
+
 # # Classes Q1-Q2 ---
 
 # Write a class Thermometer that stores a list of temperature readings in Celsius.
@@ -89,6 +96,8 @@ print("Alert 2 breaches (threshold {}):".format(alert2.threshold), alert2.breach
 # ------------------------------------------------------------------------------------
 # --- Dataclasses, Type Hints, and Docstrings ---
 print("\n ---  Dataclasses, Type Hints, and Docstrings ---\n")
+# ------------------------------------------------------------------------------------
+
 # # Dataclass Q1-Q2
 
 # rewrite class as a dataclass
@@ -100,7 +109,7 @@ print("\n ---  Dataclasses, Type Hints, and Docstrings ---\n")
 #        self.longitude = longitude
 #        self.elevation = elevation
 
-from dataclasses import dataclass, FrozenInstanceError, field
+
 
 @dataclass(frozen=True)
 class Station:
@@ -193,7 +202,7 @@ class StationBatch:
 
 
 # Trying to use the class
-print("\n Example of using StationBatch")
+print("\n Example of using ")
 batch = StationBatch(region="Triangle")
 print(f"Created batch: {batch}")
 
@@ -206,3 +215,220 @@ batch.add(s2)
 print(f"Updated batch: {batch}")
 
 print(f"Highest station in {batch.region}: {batch.highest().name}")
+
+
+# ------------------------------------------------------------------------------------
+# --- Pydantic ---
+print("\n ---  Pydantic ---\n")
+# ------------------------------------------------------------------------------------
+
+# # Pydantic Q1 & Q4
+
+class Reading(BaseModel):
+    """
+    A class representing a weather reading.
+
+    Attributes:
+        station_id (str): at list 3 characters
+        timestamp (str): required
+        temperature_c (float): between -90 and 60
+        humidity (float): between 0 and 100
+    """
+    station_id: str = Field(...,min_length=3)
+    timestamp: str = Field(..., description="Required timestamp")
+    temperature_c: float = Field(..., ge=-90, le=60)
+    humidity: float = Field(..., ge=0, le=100)
+
+    # part for Q4
+    @model_validator(mode="after")
+    def check_sensor(self):
+        """A failed sensor error: humidity is exactly 0.0 AND temperature_c is below -40"""
+        if self.humidity == 0.0 and self.temperature_c < -40:
+            raise ValueError(
+                f"Failed sensor: humidity is {self.humidity} and temperature_c is {self.temperature_c}"
+            )
+        return self
+
+valid_reading = Reading(
+    station_id="RTP1",
+    timestamp="2026-10-06T15:28",
+    temperature_c=21.0,
+    humidity=42.0
+)
+print(f"Valid reading: {valid_reading}\n")
+
+# # Pydantic Q2
+
+# A missing required field
+try:
+    invalid_reading = Reading(
+        station_id="RTP1",
+        timestamp=None,
+        temperature_c=21.0,
+        humidity="42.0"
+    )
+except ValidationError as e:
+    print(f"Validation error 1: {e}\n")
+
+# A temperature_c of 150.0
+try:
+    invalid_reading = Reading(
+        station_id="RTP1",
+        timestamp="2026-10-06T15:28",
+        temperature_c=150.0,
+        humidity="42.0"
+    )
+except ValidationError as e:
+    print(f"Validation error 2: {e}\n")
+
+# A humidity of "very humid"
+try:
+    invalid_reading = Reading(
+        station_id="RTP1",
+        timestamp="2026-10-06T15:28",
+        temperature_c=21.0,
+        humidity="very humid"
+    )
+except ValidationError as e:
+    print(f"Validation error 3: {e}\n")
+
+
+# Then construct a Reading where temperature_c is passed as the string "21.5" and humidity is passed as the integer 40.
+try:
+    reading = Reading(
+        station_id="RTP1",
+        timestamp="2026-10-06T15:28",
+        temperature_c="21.5",
+        humidity=40
+    )
+    print(f"Reading with input str temperature and int humidity: {reading}")
+    print(f"type of temperature_c: {type(reading.temperature_c)}")
+    print(f"type of humidity: {type(reading.humidity)}")    
+except ValidationError as e:
+    print(f"Validation error: {e}")
+
+# When possibble Pydantic will try to coerce types to the correct type.
+# In the previous example, Pydantic successfully converted the string "21.5" to a float and the integer 40 to a float for humidity,
+# but obviously it cannot convert "very humid" to a float.
+
+
+# # Pydantic Q3
+
+try:
+    reading = Reading(
+        station_id="RT",
+        timestamp=None,
+        temperature_c="cold",
+        humidity=40.4
+    )
+except ValidationError as e:
+    print(f"\n{e.error_count()} problems found:")
+    for err in e.errors():
+        print(f"  field={err['loc']}  type={err['type']}  msg={err['msg']}")
+
+# # Pydantic Q4
+
+# we added check_sensor with mode="after" above 
+
+# valid sensor reading
+valid_sensor_reading = Reading(
+    station_id="RTP1",
+    timestamp="2026-10-06T15:28",
+    temperature_c=21.0,
+    humidity=42.0
+)
+print(f"\nValid sensor reading: {valid_sensor_reading}\n")
+
+# invalid sensor reading
+try:
+    invalid_sensor_reading = Reading(
+        station_id="RTP1",
+        timestamp="2026-10-06T15:28",
+        temperature_c=-54.0,
+        humidity=0.0
+    )
+except ValidationError as e:
+    print(f"Validation error for invalid sensor reading: {e}\n")
+
+# why this rule cannot be expressed with Field constraints alone?
+# - Field constraints alone cannot check multiple fields in relation to each other.
+
+
+# ------------------------------------------------------------------------------------
+# --- Pytest ---
+print("\n ---  Pytest ---\n")
+# ------------------------------------------------------------------------------------
+
+# # Pytest Q1 
+
+def celsius_to_fahrenheit(celsius: float) -> float:
+    """Convert Celsius (float) to Fahrenheit (float)."""
+    return (celsius * 9/5) + 32
+
+def test_celsius_to_fahrenheit():
+    assert celsius_to_fahrenheit(0) == 32
+    assert celsius_to_fahrenheit(100) == 212
+    assert celsius_to_fahrenheit(37) == pytest.approx(98.6)
+
+# we add pytest.approx for floating point comparison
+
+# # Pytest Q2 
+
+def mean(values: list[float]) -> float:
+    """Calculate the mean of a non-empty list of float values."""
+
+    if not values:
+        raise ValueError("The list of values cannot be empty.")
+    return sum(values) / len(values)
+
+def test_mean_of_empty_raises():
+    with pytest.raises(ValueError, match="empty"):
+        mean([])
+
+# without match="empty" the test would pass for function that does not check the empty list condition specifically.
+
+
+# # Pytest Q3
+
+@pytest.mark.parametrize(
+    "values, expected_mean",
+    [
+        ([1.0], 1.0),
+        ([-14.0, 5.0, 9.0], 0.0),
+        ([10.0, 20.0, 30.0], 20.0),
+        ([0.0, -100.0, 40.0], -20.0),
+    ]
+)
+def test_mean_values(values, expected_mean):
+    assert mean(values) == expected_mean
+
+#warmup_01.py::test_mean_values[values0-1.0] PASSED
+#warmup_01.py::test_mean_values[values1-0.0] PASSED
+#warmup_01.py::test_mean_values[values2-20.0] PASSED
+#warmup_01.py::test_mean_values[values3--20.0] PASSED
+
+# why is one parametrized test with four cases better than four nearly identical test functions?
+# - It reduces code duplication.
+# - It makes it easier to add more test cases.
+# - It provides a clear overview of all test scenarios.
+# - It ensures consistency in test logic.
+
+
+# # Pytest Q4
+
+# after changing the conversion formula from 9/5 to 9/4, we get this info:
+#======================================================================================= FAILURES =======================================================================================
+#______________________________________________________________________________ test_celsius_to_fahrenheit ______________________________________________________________________________
+#
+#    def test_celsius_to_fahrenheit():
+#       assert celsius_to_fahrenheit(0) == 32
+#       assert celsius_to_fahrenheit(100) == 212
+#       assert 257.0 == 212
+#        +  where 257.0 = celsius_to_fahrenheit(100)
+#warmup_01.py:370: AssertionError
+#=============================================================================== short test summary info ================================================================================
+#FAILED warmup_01.py::test_celsius_to_fahrenheit - assert 257.0 == 212
+
+# what specific values did pytest show you in the failure report, and why is that more useful than a bare "assertion failed"?
+# - Pytest showed that celsius_to_fahrenheit(100) returned 257.0 instead of the expected 212, which helps identify the incorrect conversion formula.
+
