@@ -65,6 +65,17 @@ print("Hottest:", thermometer_MOR.hottest())
 print("\nTesting __repr__ method:")
 print(thermometer_MOR)
 
+# adding another one instance
+thermometer_CARY = Thermometer("Cary")
+thermometer_CARY.add(12)
+thermometer_CARY.add(16)
+thermometer_CARY.add(20)
+
+# Checking the __repr__ method for the list of Thermometer class
+print([thermometer_MOR, thermometer_CARY])
+
+
+
 # what Python displays when a class has no __repr__, and why that is unhelpful when debugging?
 # - Without __repr__, Python displays the default '<ClassName object at 0x...>', which only reveals the type and memory address. 
 # - This is unhelpful during debugging because it hides the object's internal state, making it impossible to distinguish instances in logs or tracebacks.
@@ -159,7 +170,9 @@ print(station_c)
 station_set = {station_a, station_b, station_c}
 print(f"\nLength of station_set: {len(station_set)}")
 
-
+# what does frozen=True give you besides immutability, and why is that useful here?
+# - Besides immutability, frozen=True also makes the dataclass hashable if all its fields are hashable.
+# - This is useful because it allows instances of the Station class to be added to sets and used as dictionary keys, as demonstrated above.
 
 # # Dataclass Q3
 @dataclass
