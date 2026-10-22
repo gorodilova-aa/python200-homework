@@ -274,11 +274,11 @@ print("\tjoblib Question 1\n")
 
 
 # Save the trained model to a file using joblib
-joblib.dump(model, "models/weather_classifier.pkl")
+joblib.dump(model, "models/warmup_model.pkl")
 print("Model saved.")
 
 # Load the model back from the file and print its type
-clf = joblib.load("models/weather_classifier.pkl")
+clf = joblib.load("models/warmup_model.pkl")
 print(f"Type of loaded model: {type(clf)}")
 
 # comparing the loaded model's accuracy with the original model's accuracy
