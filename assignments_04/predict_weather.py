@@ -20,7 +20,9 @@ def main() -> None:
         print(f"Max_t {day['temperature_2m_max']:.0f}C, Min_t {day['temperature_2m_min']:.0f}C, {day['precipitation_sum']:.0f}mm rain, "
               f"{day['wind_speed_10m_max']:.0f} km/h wind -> {result.label} ({result.probability:.2f})")
 
-
+# Without this guard, any other script importing `predict_weather.py` (e.g., to reuse
+# a helper function or sample data) would immediately execute `main()` as a side effect,
+# redundantly loading the model, generating predictions, and printing to stdout upon import.
 if __name__ == "__main__":
     main()
 
