@@ -1,0 +1,10 @@
+{
+  "model_name": "weather_classifier",
+  "features": [
+    "temperature_high",
+    "temperature_low",
+    "precipitation",
+    "wind_speed",
+    "humidity"
+  ]
+}
