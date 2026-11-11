@@ -150,7 +150,7 @@ print("\nStep 6: Reflection\n")
 
 print("Reflection is given in a comment block.")
 
-"""The LlamaIndex lesson lists the steps that LlamaIndex automates: chunking, embedding, and indexing. 
+""" 1. The LlamaIndex lesson lists the steps that LlamaIndex automates: chunking, embedding, and indexing. 
 How many lines of code did your LlamaIndex implementation take in your project? 
 
 - My LlamaIndex implementation took around 30 lines of code without comments. 
@@ -164,4 +164,18 @@ What does that tell you about the value of using a framework?
 
 - Using a framework like LlamaIndex significantly reduces the amount of code needed to implement complex tasks, 
 making development more efficient and less error-prone.
+"""
+
+""" 2. You have now built a system that answers questions from real documents. 
+Describe a different use case — not a coffee shop — where this approach would add genuine value to a business or organization.
+
+- This would be useful for online application submission, where lots of different applications can be fiiled.
+ Find out the correct application, required documents, where and how to get the results of the service.
+"""
+
+"""
+3. What is one failure mode that RAG cannot fully prevent, even when retrieval is working correctly?
+
+- One failure mode is when the retrieved documents contain outdated or incorrect information. 
+Even if the retrieval is accurate, the system can still provide answers based on stale data, leading to potentially incorrect or misleading responses.
 """
