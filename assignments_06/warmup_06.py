@@ -155,8 +155,6 @@ documents = {
     "hiring.txt": "We are currently hiring baristas and shift supervisors. Send your resume to jobs@groundworkcoffee.com.",
     "loyalty.txt": "Join our loyalty program to earn one point per dollar spent. Redeem 100 points for a free drink of your choice.",
 }
-query = "How do I sign up for rewards?"
-
 
 results = simple_keyword_retrieval(query, documents)
 
@@ -322,10 +320,10 @@ for node_with_score in response.source_nodes:
     print(f"Text Snippet: {node_with_score.node.get_content()[:150]}...")
     print("-" * 30)
 
-# set similarity_top_k=3 for the query engine
-query_engine = index.as_query_engine(similarity_top_k=3)
+# set similarity_top_k=5 for the query engine
+query_engine = index.as_query_engine(similarity_top_k=5)
 
-print("\nset similarity_top_k=3 for the query engine\n")
+print("\nset similarity_top_k=5 for the query engine\n")
 print("=" * 30)
 print(f"Q: {question[0]}")
 print("=" * 30)
@@ -341,7 +339,7 @@ for node_with_score in response.source_nodes:
 
 # Add a comment explaining how the response changed (if at all) and whether more retrieved context is always better.
 # - The response with similarity_top_k=1 is more focused and concise. It takes exatly relevant info from the rigth document for this question.
-# - The response with similarity_top_k=3 also good but it refrase the most relevant information, potentially including less relevant context.
+# - The response with similarity_top_k=5 also good but it refrase the most relevant information, potentially including less relevant context.
 # - More retrieved context is not always better, as it can introduce noise and less relevant information.
 
 

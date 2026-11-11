@@ -90,7 +90,7 @@ for q in questions:
     print("=" * 30)
 
     for node_with_score in response.source_nodes:
-        print(f"Node ID: {node_with_score.node.node_id}")
+        print(f"File name: {node_with_score.node.metadata['file_name']}")
         print("-" * 30)
         print(f"Similarity Score: {node_with_score.score:.4f}")
         print("-" * 30)
@@ -125,7 +125,7 @@ for q in struggle_questions:
     print("=" * 30)
 
     for node_with_score in response.source_nodes:
-        print(f"Node ID: {node_with_score.node.node_id}")
+        print(f"File name: {node_with_score.node.metadata['file_name']}")
         print("-" * 30)
         print(f"Similarity Score: {node_with_score.score:.4f}")
         print("-" * 30)
