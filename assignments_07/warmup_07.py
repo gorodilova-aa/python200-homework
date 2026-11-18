@@ -154,7 +154,8 @@ def run_agent(user_prompt: str) -> str:
 # How many API calls will be made to answer this query?
 # - One, because the model will not call any tools and will directly provide the answer.
 
-run_agent("Convert 100 degrees Celsius to Fahrenheit")
+response = run_agent("Convert 100 degrees Celsius to Fahrenheit")
+print(response)
 
 # Surprisingly, I was not right. This query triggered a tool call. 
 # But since we did not specified how to handle the tool call, the model did not execute it.
@@ -1010,8 +1011,10 @@ code_agent = CodeAgent(
 prompt = "Load bike_commute.csv. Plot avg_heart_rate vs duration_min as a scatter plot with green dots."
 
 response_tool = tool_agent.run(prompt)
-response_code = code_agent.run(prompt, additional_args={"csv_manager": csv_manager})
+print(response_tool)
 
+response_code = code_agent.run(prompt, additional_args={"csv_manager": csv_manager})
+print(response_code)
 
 # 1. What did each agent actually produce? Did the ToolCallingAgent change the dot color? Did the CodeAgent?
 #    - ToolCallingAgent: 
