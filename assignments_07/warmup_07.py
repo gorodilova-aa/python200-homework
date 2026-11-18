@@ -492,7 +492,7 @@ class CsvManager:
     def compute_correlation(self, col1: str, col2: str):
         """
         Compute the Pearson correlation between two columns in the loaded DataFrame.
-        Returns the correlation coefficient and p-value.
+        Returns a dictionary with  both columns, the correlation coefficient and p-value.
         """
         error = self._ensure_loaded()
         if error:
@@ -505,8 +505,8 @@ class CsvManager:
             return {"error": f"'{col2}' is not a column. Options: {self.df.columns.tolist()}"}
 
         from scipy.stats import pearsonr
-        corr, p_value = pearsonr(self.df[col1], self.df[col2])
-        return {"correlation": round(corr, 4), "p_value": round(p_value, 4)}
+        pearson_r, p_value = pearsonr(self.df[col1], self.df[col2])
+        return {"col1": col1, "col2": col2, "pearson_r": round(pearson_r, 4), "p_value": round(p_value, 4)}
 
 print("Class defined")
 
