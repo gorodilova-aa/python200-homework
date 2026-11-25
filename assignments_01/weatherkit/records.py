@@ -3,7 +3,7 @@
 # -----------------------------------------------------------------------
 
 from dataclasses import dataclass
-from weatherkit import WeatherResponse
+from weatherkit.schemas import WeatherResponse
 
 
 # Why is HourlyReading a dataclass rather than a Pydantic model, when WeatherResponse is a Pydantic model?
